@@ -136,3 +136,63 @@ export const GALLERY = [
 
 export const HERO_VIDEO_URL =
   "https://customer-assets.emergentagent.com/job_a9707996-f323-460b-9c10-150c10b94cbc/artifacts/y4trtxdl_922259dc-719e-4cb3-aa7c-2cd1ab3aec1a.mp4";
+
+// Today's rotating selection — revealed alongside scroll on the hero
+export const TODAY_FLAVOURS = [
+  {
+    name: "Vanilková",
+    note: "Madagaskarský bourbon",
+    type: "Točená",
+    price: "29 Kč",
+    color: "#F4E4C5",
+  },
+  {
+    name: "Smetanová",
+    note: "Klasika z farmy",
+    type: "Točená",
+    price: "29 Kč",
+    color: "#F1E8D4",
+  },
+  {
+    name: "Belgická čokoláda",
+    note: "70% kakao",
+    type: "Točená",
+    price: "32 Kč",
+    color: "#5A3A2A",
+  },
+  {
+    name: "Jahodová",
+    note: "S kousky ovoce",
+    type: "Točená",
+    price: "32 Kč",
+    color: "#D87A82",
+  },
+  {
+    name: "Stracciatella",
+    note: "Smetana + tmavé kakao",
+    type: "Točená",
+    price: "32 Kč",
+    color: "#E8DEC9",
+  },
+  {
+    name: "Pistáciová",
+    note: "Sicilská pistácie",
+    type: "Točená",
+    price: "35 Kč",
+    color: "#A8C795",
+  },
+  {
+    name: "Citrónová tříšť",
+    note: "Svěží & ledová",
+    type: "Tříšť",
+    price: "39 Kč",
+    color: "#F0DC73",
+  },
+  {
+    name: "Malinová tříšť",
+    note: "Lesní maliny",
+    type: "Tříšť",
+    price: "39 Kč",
+    color: "#C4536A",
+  },
+];

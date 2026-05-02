@@ -1,9 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowDown, Star } from "lucide-react";
-import { BRAND, HOURS_RANGES } from "../../mock";
+import { ArrowDown } from "lucide-react";
+import { BRAND, HOURS_RANGES, TODAY_FLAVOURS } from "../../mock";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+
+// Each flavour reveals at its own scroll-progress threshold.
+// Spread across early-to-mid hero so all 8 are visible by ~70% scroll.
+const FLAVOUR_THRESHOLDS = [
+  0.04, 0.11, 0.18, 0.26, 0.34, 0.43, 0.52, 0.62,
+];
 
 /**
  * Buttery-smooth scroll-scrub via pre-extracted JPEG frames + canvas.
@@ -218,7 +224,7 @@ const HeroVideo = () => {
 
   // CTA fade — fully visible at top, gone by progress 0.06
   const ctaOpacity = Math.max(0, 1 - progress / 0.06);
-  const ctaTranslate = Math.min(40, progress * 600);
+  const ctaTranslate = Math.min(20, progress * 200);
 
   const scrollHint = () => {
     window.scrollTo({
@@ -262,15 +268,36 @@ const HeroVideo = () => {
           </div>
         )}
 
-        {/* Top-center "OPEN NOW" badge */}
-        <div
-          className="absolute top-6 left-1/2 -translate-x-1/2 md:top-8 z-10 transition-all duration-700"
+        {/* TOP CENTER — Subtle CTA "Natoč si zmrzku" (fades on scroll) */}
+        <button
+          onClick={scrollHint}
+          className="group absolute top-7 md:top-9 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2.5 pl-4 pr-1.5 py-1.5 rounded-full bg-white/12 backdrop-blur-md ring-1 ring-white/25 text-white hover:bg-white/22 hover:ring-white/40 transition-all duration-300 will-change-transform"
           style={{
-            opacity: ready ? 1 : 0,
-            transform: `translate(-50%, ${ready ? 0 : -10}px)`,
+            opacity: ctaOpacity,
+            transform: `translate(-50%, -${ctaTranslate}px)`,
+            pointerEvents: ctaOpacity < 0.1 ? "none" : "auto",
           }}
         >
-          <div className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/12 backdrop-blur-md ring-1 ring-white/20 text-white">
+          <span className="text-[12px] tracking-[0.25em] uppercase font-medium">
+            Natoč si zmrzku
+          </span>
+          <span className="w-7 h-7 rounded-full bg-white/15 grid place-items-center transition-all duration-300 group-hover:bg-white group-hover:text-[#2a2724] group-hover:translate-y-0.5">
+            <ArrowDown className="w-3.5 h-3.5" strokeWidth={2.2} />
+          </span>
+        </button>
+
+        {/* Today's flavours — staggered reveal alongside scroll */}
+        <FlavourReveal progress={progress} />
+
+        {/* BOTTOM CENTER — Live status pill (Otevřeno teď / Zavřeno) */}
+        <div
+          className="absolute bottom-12 md:bottom-14 left-1/2 -translate-x-1/2 z-10 transition-all duration-700"
+          style={{
+            opacity: ready ? 1 : 0,
+            transform: `translate(-50%, ${ready ? 0 : 10}px)`,
+          }}
+        >
+          <div className="flex items-center gap-3 px-4 py-2.5 rounded-full bg-[#2a2724]/55 backdrop-blur-md ring-1 ring-white/15 text-white">
             <span className="relative flex h-2 w-2">
               <span
                 className={`absolute inline-flex h-full w-full rounded-full opacity-75 ${
@@ -287,43 +314,9 @@ const HeroVideo = () => {
               {openNow ? "Otevřeno teď" : "Zavřeno"}
             </span>
             <span className="w-px h-3 bg-white/25" />
-            <span className="text-[11px] tracking-[0.2em] text-white/85">
+            <span className="text-[11px] tracking-[0.2em] text-white/75">
               {BRAND.city}
             </span>
-          </div>
-        </div>
-
-        {/* Bottom-center CTA: NATOČ SI ZMRZKU */}
-        <div
-          className="absolute bottom-12 md:bottom-14 left-1/2 -translate-x-1/2 z-10 will-change-transform"
-          style={{
-            opacity: ctaOpacity,
-            transform: `translate(-50%, ${ctaTranslate}px)`,
-            pointerEvents: ctaOpacity < 0.1 ? "none" : "auto",
-          }}
-        >
-          <div className="flex flex-col items-center gap-4">
-            <button
-              onClick={scrollHint}
-              className="group relative inline-flex items-center gap-3 pl-7 pr-3 py-3 rounded-full bg-[#C46B5B] hover:bg-[#A8543F] text-white font-medium text-[15px] tracking-wide transition-all duration-300 shadow-[0_18px_45px_-10px_rgba(196,107,91,0.6)] hover:shadow-[0_22px_55px_-10px_rgba(196,107,91,0.85)] hover:-translate-y-0.5"
-            >
-              <span>Natoč si zmrzku</span>
-              <span className="w-9 h-9 rounded-full bg-white/20 grid place-items-center transition-transform duration-300 group-hover:translate-y-0.5 group-hover:rotate-180">
-                <ArrowDown className="w-4 h-4" strokeWidth={2.2} />
-              </span>
-              {/* spinning star sticker */}
-              <span className="absolute -top-2 -right-2 w-9 h-9 rounded-full bg-white text-[#2a2724] grid place-items-center font-display font-black text-[10px] shadow-md rotate-12 group-hover:rotate-[24deg] transition-transform">
-                <Star
-                  className="w-3.5 h-3.5 fill-[#C46B5B] text-[#C46B5B]"
-                  strokeWidth={1.5}
-                />
-              </span>
-            </button>
-            <div className="flex items-center gap-2 text-[10px] tracking-[0.4em] uppercase text-white/85">
-              <span className="w-6 h-px bg-white/40" />
-              Skroluj — zmrzlina začne téct
-              <span className="w-6 h-px bg-white/40" />
-            </div>
           </div>
         </div>
 
@@ -336,6 +329,75 @@ const HeroVideo = () => {
         </div>
       </div>
     </section>
+  );
+};
+
+/**
+ * Right-rail flavour reveal — each item fades + slides in once scroll
+ * progress crosses its individual threshold.
+ */
+const FlavourReveal = ({ progress }) => {
+  return (
+    <div className="hidden md:block absolute right-7 lg:right-12 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
+      <div className="mb-4 flex items-center gap-3">
+        <span className="w-6 h-px bg-white/40" />
+        <span className="text-[10px] tracking-[0.4em] uppercase text-white/75">
+          Dnes točíme
+        </span>
+      </div>
+      <ul className="flex flex-col gap-2.5 max-w-[300px]">
+        {TODAY_FLAVOURS.map((f, i) => {
+          const threshold = FLAVOUR_THRESHOLDS[i] ?? 0.7;
+          const window = 0.05; // fade-in window length
+          const local = Math.min(
+            1,
+            Math.max(0, (progress - threshold) / window)
+          );
+          return (
+            <li
+              key={f.name}
+              className="will-change-transform"
+              style={{
+                opacity: local,
+                transform: `translateX(${(1 - local) * 40}px)`,
+                transition: "opacity 80ms linear, transform 80ms linear",
+              }}
+            >
+              <div className="flex items-center gap-3 pl-2 pr-3 py-2 rounded-full bg-white/10 backdrop-blur-md ring-1 ring-white/15 text-white">
+                <span
+                  className="relative w-9 h-9 rounded-full ring-2 ring-white/30 shrink-0"
+                  style={{ background: f.color }}
+                >
+                  <span
+                    className="absolute inset-1.5 rounded-full"
+                    style={{
+                      background:
+                        "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.55), transparent 60%)",
+                    }}
+                  />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-display font-bold text-[14px] truncate leading-none">
+                      {f.name}
+                    </span>
+                    <span className="text-[9px] tracking-[0.2em] uppercase text-white/55">
+                      {f.type}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-white/70 mt-1 truncate">
+                    {f.note}
+                  </div>
+                </div>
+                <span className="font-mono text-[12px] text-white/85 tabular-nums shrink-0">
+                  {f.price}
+                </span>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 };
 
