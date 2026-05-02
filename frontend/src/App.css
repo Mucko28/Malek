@@ -1,0 +1,34 @@
+/* App-level styles. Avoid centering the entire app. */
+.App {
+  min-height: 100vh;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #FBE4EA;
+  color: #5b1f33;
+}
+
+/* Custom selection color */
+::selection {
+  background: #8E2A4A;
+  color: #FBE4EA;
+}
+
+/* Smooth scrollbar (webkit) */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #FBE4EA;
+}
+::-webkit-scrollbar-thumb {
+  background: #E294A6;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8E2A4A;
+}
