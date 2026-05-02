@@ -4,22 +4,22 @@ import { HERO_VIDEO_URL } from "../../mock";
 /**
  * Smooth scroll-controlled video hero.
  *
- * Smoothness strategy:
- * 1) Fetch the entire video as a Blob and use a blob: URL as the src.
- *    This guarantees the full video sits in memory => seeks are instantaneous.
- * 2) On scroll, just store the target time. A single rAF loop sets
- *    video.currentTime once per frame (no easing/lerp races).
- * 3) Use requestVideoFrameCallback when available so we know when a frame
- *    has actually been decoded (prevents skipped frames).
- * 4) Keep the video paused (playbackRate = 0) so it never advances on its own.
+ * Approach:
+ *  1) Pre-download the entire video as a Blob and feed it to <video> via a
+ *     blob: URL. With the file fully in memory, seeks are essentially instant.
+ *  2) A single requestAnimationFrame loop continuously polls a target time
+ *     (set by the scroll listener) and seeks the video toward it.
+ *  3) Light easing (lerp) toward the target hides micro-jitter from frame
+ *     quantisation while staying tightly synced with scroll.
  */
 const HeroVideo = () => {
   const containerRef = useRef(null);
   const videoRef = useRef(null);
   const targetTimeRef = useRef(0);
-  const lastSetRef = useRef(-1);
+  const currentSetRef = useRef(0);
   const rafRef = useRef(null);
   const [ready, setReady] = useState(false);
+  const [progressPct, setProgressPct] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -45,30 +45,33 @@ const HeroVideo = () => {
     const v = videoRef.current;
     if (!v) return;
 
+    const onLoaded = () => {
+      try {
+        v.pause();
+        v.currentTime = 0;
+      } catch (e) {
+        // ignore
+      }
+      setReady(true);
+    };
+    v.addEventListener("loadeddata", onLoaded);
+
     const load = async () => {
       try {
         const res = await fetch(HERO_VIDEO_URL);
+        if (!res.ok) throw new Error("fetch failed");
         const blob = await res.blob();
         if (cancelled) return;
         objectUrl = URL.createObjectURL(blob);
         v.src = objectUrl;
         v.load();
       } catch (e) {
-        // fallback: use direct URL
-        if (!v.src) v.src = HERO_VIDEO_URL;
+        // fallback: use direct URL with range support
+        v.src = HERO_VIDEO_URL;
+        v.load();
       }
     };
     load();
-
-    const onLoaded = () => {
-      try {
-        v.pause();
-        v.playbackRate = 0;
-        v.currentTime = 0.001;
-      } catch (e) {}
-      setReady(true);
-    };
-    v.addEventListener("loadeddata", onLoaded);
 
     return () => {
       cancelled = true;
@@ -77,90 +80,76 @@ const HeroVideo = () => {
     };
   }, []);
 
-  // rAF loop: seek video toward target time exactly once per frame
+  // rAF loop — always running while ready. Eases video time toward target.
   useEffect(() => {
     if (!ready) return;
     const v = videoRef.current;
     if (!v) return;
 
     let stopped = false;
-
-    // Use requestVideoFrameCallback if available for tighter sync
-    const hasRVFC = typeof v.requestVideoFrameCallback === "function";
-
-    const apply = () => {
+    const tick = () => {
       if (stopped) return;
-      const tgt = targetTimeRef.current;
-      if (v.duration && Math.abs(tgt - lastSetRef.current) > 0.0005) {
-        try {
-          v.currentTime = Math.max(0, Math.min(v.duration - 0.001, tgt));
-          lastSetRef.current = tgt;
-        } catch (e) {}
+      const dur = v.duration;
+      if (dur && !Number.isNaN(dur)) {
+        const tgt = targetTimeRef.current;
+        const cur = currentSetRef.current;
+        // Light ease toward target: feels smoother than instant jumps
+        const next = cur + (tgt - cur) * 0.25;
+        if (Math.abs(next - cur) > 0.002) {
+          currentSetRef.current = next;
+          try {
+            v.currentTime = Math.max(0, Math.min(dur - 0.001, next));
+          } catch (e) {
+            // ignore
+          }
+        }
       }
-      if (hasRVFC) {
-        v.requestVideoFrameCallback(apply);
-      } else {
-        rafRef.current = requestAnimationFrame(apply);
-      }
+      rafRef.current = requestAnimationFrame(tick);
     };
-
-    if (hasRVFC) {
-      v.requestVideoFrameCallback(apply);
-    } else {
-      rafRef.current = requestAnimationFrame(apply);
-    }
-
+    rafRef.current = requestAnimationFrame(tick);
     return () => {
       stopped = true;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [ready]);
 
-  // Mobile / reduced motion: just loop the video
+  // Mobile / reduced motion: just loop
   useEffect(() => {
     if (!ready) return;
     const v = videoRef.current;
     if (!v) return;
     if (reducedMotion || isMobile) {
-      v.playbackRate = 1;
       v.loop = true;
       v.muted = true;
       v.play().catch(() => {});
+    } else {
+      v.pause();
     }
   }, [ready, reducedMotion, isMobile]);
 
-  // Scroll listener -> compute progress -> store target time
+  // Scroll listener — compute progress and store target time
   useEffect(() => {
-    let ticking = false;
     const update = () => {
-      ticking = false;
       const el = containerRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
       const total = el.offsetHeight - window.innerHeight;
       const scrolled = Math.min(Math.max(-rect.top, 0), total);
       const p = total > 0 ? scrolled / total : 0;
+      setProgressPct(p);
       const v = videoRef.current;
       if (v && v.duration && !reducedMotion && !isMobile) {
-        // ease the mapped progress slightly to avoid micro-jitter
         targetTimeRef.current = p * (v.duration - 0.001);
       }
     };
-
-    const onScroll = () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(update);
-      }
-    };
     update();
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
     };
-  }, [reducedMotion, isMobile]);
+  }, [reducedMotion, isMobile, ready]);
 
   return (
     <section
@@ -168,8 +157,8 @@ const HeroVideo = () => {
       ref={containerRef}
       className="relative w-full"
       style={{
-        // Generous scroll distance => more pixels per frame => smoother feel
-        height: reducedMotion || isMobile ? "100vh" : "500vh",
+        // Tall scroll distance => more pixels per frame => smoother feel
+        height: reducedMotion || isMobile ? "100vh" : "400vh",
       }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#A8A099]">
@@ -180,10 +169,23 @@ const HeroVideo = () => {
           playsInline
           preload="auto"
           disablePictureInPicture
-          // src set via blob URL in effect
         />
-        {/* subtle vignette to integrate with page */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(0,0,0,0.12)_100%)]" />
+        {/* Loading state */}
+        {!ready && (
+          <div className="absolute inset-0 grid place-items-center text-white/80 text-sm tracking-widest uppercase">
+            <div className="flex items-center gap-3">
+              <span className="w-2 h-2 rounded-full bg-white/80 animate-pulse" />
+              Loading
+            </div>
+          </div>
+        )}
+        {/* progress bar (subtle) */}
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/15">
+          <div
+            className="h-full bg-white/80"
+            style={{ width: `${progressPct * 100}%` }}
+          />
+        </div>
       </div>
     </section>
   );
