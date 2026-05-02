@@ -1,4 +1,5 @@
 from fastapi import FastAPI, APIRouter
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -42,6 +43,20 @@ class StatusCheckCreate(BaseModel):
 async def root():
     return {"message": "Hello World"}
 
+@api_router.get("/frames/info")
+async def frames_info():
+    """Returns metadata about the pre-extracted hero video frame sequence."""
+    frames_dir = ROOT_DIR / "static" / "frames"
+    if not frames_dir.exists():
+        return {"count": 0, "fps": 24, "duration": 0}
+    files = sorted(frames_dir.glob("frame_*.jpg"))
+    return {
+        "count": len(files),
+        "fps": 24,
+        "duration": len(files) / 24.0,
+        "pattern": "/api/frames/frame_{:03d}.jpg",
+    }
+
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
     status_dict = input.model_dump()
@@ -68,6 +83,12 @@ async def get_status_checks():
 
 # Include the router in the main app
 app.include_router(api_router)
+
+# Mount static frames so they are reachable via /api/frames/<filename>.jpg
+# (the /api prefix is required by Kubernetes ingress to reach the backend)
+frames_path = ROOT_DIR / "static" / "frames"
+if frames_path.exists():
+    app.mount("/api/frames", StaticFiles(directory=str(frames_path)), name="frames")
 
 app.add_middleware(
     CORSMiddleware,
