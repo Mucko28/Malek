@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Clock, MapPin, Phone, Cloud, Navigation } from "lucide-react";
+import { Clock, MapPin, Phone, Navigation } from "lucide-react";
 import { CONTACT, HOURS, HOURS_RANGES, GALLERY } from "../../mock";
 
 const Visit = () => {
@@ -42,7 +42,7 @@ const Visit = () => {
   return (
     <section
       id="visit"
-      className="relative bg-[#F4EFE8] text-[#2a2724] py-28 md:py-40 overflow-hidden"
+      className="relative bg-[#EAE2D5] text-[#2a2724] py-28 md:py-40 overflow-hidden"
     >
       {/* Soft accent blob */}
       <div className="absolute top-1/3 -right-32 w-[500px] h-[500px] rounded-full bg-[#C46B5B]/10 blur-[120px] pointer-events-none" />
@@ -129,13 +129,6 @@ const Visit = () => {
                 );
               })}
             </ul>
-            <div className="relative mt-7 flex items-start gap-3 px-4 py-3 rounded-xl bg-[#F4EFE8] text-[13px] leading-relaxed">
-              <Cloud className="w-4 h-4 mt-0.5 shrink-0 text-[#C46B5B]" />
-              <span>
-                I když venku prší, točíme dál — ve vinotece je vždy sucho a
-                příjemně.
-              </span>
-            </div>
           </div>
 
           {/* Map + address */}

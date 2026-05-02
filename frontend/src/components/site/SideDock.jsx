@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Instagram, Facebook, Phone, Menu, X, MapPin } from "lucide-react";
 import { BRAND, NAV_LINKS, CONTACT } from "../../mock";
-import { cn } from "../../lib/utils";
-
-/**
+import { cn } from "../../lib/utils";/**
  * Floating side dock + drawer menu. Replaces the top navbar so the hero
  * video stays unobstructed.
  *  - Left rail: vertical brand mark + section progress dots + socials
@@ -97,8 +95,12 @@ const SideDock = () => {
         {/* Socials */}
         <div className="pointer-events-auto flex flex-col items-center gap-2">
           {[
-            { Icon: Instagram, href: "#", label: "Instagram" },
-            { Icon: Facebook, href: "https://www.facebook.com/p/Zmrzlina-M%C3%A1lek-Slati%C5%88any-100063542202264/", label: "Facebook" },
+            { Icon: Instagram, href: CONTACT.instagram, label: "Instagram" },
+            {
+              Icon: Facebook,
+              href: CONTACT.facebook,
+              label: "Facebook",
+            },
             { Icon: Phone, href: `tel:${CONTACT.phone}`, label: "Tel" },
           ].map(({ Icon, href, label }, i) => (
             <a

@@ -333,22 +333,22 @@ const HeroVideo = () => {
 };
 
 /**
- * Right-rail flavour reveal — each item fades + slides in once scroll
- * progress crosses its individual threshold.
+ * Right-rail flavour reveal — each name fades + slides in once scroll
+ * progress crosses its threshold. Names only — no extras.
  */
 const FlavourReveal = ({ progress }) => {
   return (
     <div className="hidden md:block absolute right-7 lg:right-12 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
-      <div className="mb-4 flex items-center gap-3">
+      <div className="mb-5 flex items-center gap-3">
         <span className="w-6 h-px bg-white/40" />
         <span className="text-[10px] tracking-[0.4em] uppercase text-white/75">
           Dnes točíme
         </span>
       </div>
-      <ul className="flex flex-col gap-2.5 max-w-[300px]">
+      <ul className="flex flex-col gap-2.5">
         {TODAY_FLAVOURS.map((f, i) => {
           const threshold = FLAVOUR_THRESHOLDS[i] ?? 0.7;
-          const window = 0.05; // fade-in window length
+          const window = 0.05;
           const local = Math.min(
             1,
             Math.max(0, (progress - threshold) / window)
@@ -359,38 +359,25 @@ const FlavourReveal = ({ progress }) => {
               className="will-change-transform"
               style={{
                 opacity: local,
-                transform: `translateX(${(1 - local) * 40}px)`,
+                transform: `translateX(${(1 - local) * 36}px)`,
                 transition: "opacity 80ms linear, transform 80ms linear",
               }}
             >
-              <div className="flex items-center gap-3 pl-2 pr-3 py-2 rounded-full bg-white/10 backdrop-blur-md ring-1 ring-white/15 text-white">
+              <div className="flex items-center gap-3 pl-2 pr-5 py-2 rounded-full bg-white/10 backdrop-blur-md ring-1 ring-white/15 text-white">
                 <span
-                  className="relative w-9 h-9 rounded-full ring-2 ring-white/30 shrink-0"
+                  className="relative w-8 h-8 rounded-full ring-2 ring-white/30 shrink-0"
                   style={{ background: f.color }}
                 >
                   <span
-                    className="absolute inset-1.5 rounded-full"
+                    className="absolute inset-1 rounded-full"
                     style={{
                       background:
                         "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.55), transparent 60%)",
                     }}
                   />
                 </span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-display font-bold text-[14px] truncate leading-none">
-                      {f.name}
-                    </span>
-                    <span className="text-[9px] tracking-[0.2em] uppercase text-white/55">
-                      {f.type}
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-white/70 mt-1 truncate">
-                    {f.note}
-                  </div>
-                </div>
-                <span className="font-mono text-[12px] text-white/85 tabular-nums shrink-0">
-                  {f.price}
+                <span className="font-display font-bold text-[15px] leading-none whitespace-nowrap">
+                  {f.name}
                 </span>
               </div>
             </li>

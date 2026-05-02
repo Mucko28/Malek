@@ -87,10 +87,10 @@ const Footer = () => {
           </div>
           <div className="flex items-center gap-3">
             {[
-              { Icon: Instagram, href: "#" },
+              { Icon: Instagram, href: CONTACT.instagram },
               {
                 Icon: Facebook,
-                href: "https://www.facebook.com/p/Zmrzlina-M%C3%A1lek-Slati%C5%88any-100063542202264/",
+                href: CONTACT.facebook,
               },
             ].map((s, i) => (
               <a

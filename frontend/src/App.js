@@ -5,8 +5,8 @@ import SideDock from "./components/site/SideDock";
 import HeroVideo from "./components/site/HeroVideo";
 import Marquee from "./components/site/Marquee";
 import About from "./components/site/About";
-import Menu from "./components/site/Menu";
 import Visit from "./components/site/Visit";
+import Menu from "./components/site/Menu";
 import Reviews from "./components/site/Reviews";
 import Footer from "./components/site/Footer";
 import Drip from "./components/site/Drip";
@@ -24,14 +24,14 @@ const Home = () => {
           "OD ROKU 1997",
           "SLATIŇANY",
           "POCTIVÉ PORCE",
-          "TOČÍME I ZA DEŠTĚ",
+          "DOMÁCÍ KVALITA",
         ]}
         bg="#C46B5B"
         fg="#F4EFE8"
         accent="#2a2724"
       />
       <About />
-      {/* Drip transition cream -> coffee */}
+      <Visit />
       <div className="bg-[#F4EFE8]">
         <Drip color="#2a2724" height={70} />
       </div>
@@ -43,7 +43,6 @@ const Home = () => {
         accent="#C46B5B"
         speed={50}
       />
-      <Visit />
       <Reviews />
       <Footer />
       <Toaster />

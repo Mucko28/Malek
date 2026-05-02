@@ -95,10 +95,11 @@ export const CONTACT = {
   phoneDisplay: "773 838 860",
   email: "zmrzka@potravinymalek.cz",
   web: "zmrzlina.potravinymalek.cz",
+  instagram: "https://www.instagram.com/zmrzlinamalekslatinany/",
+  facebook:
+    "https://www.facebook.com/p/Zmrzlina-M%C3%A1lek-Slati%C5%88any-100063542202264/",
   mapUrl:
     "https://mapy.com/cs/zakladni?source=firm&id=13153106&x=15.8166&y=49.9142&z=17",
-  mapEmbed:
-    "https://frame.mapy.com/s/lekuvasusa", // placeholder; replaced by static fallback
   coords: { lat: 49.9142, lng: 15.8166 },
 };
 
@@ -127,11 +128,10 @@ export const REVIEWS = [
 ];
 
 export const GALLERY = [
-  "https://images.unsplash.com/photo-1636564499112-6113e73c504a?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1728777185620-4e5f6cff03db?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1696930150242-0d82f96630e9?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1697125138277-962ef4126de4?auto=format&fit=crop&w=900&q=80",
-  "https://images.unsplash.com/photo-1513329634746-37399553de66?auto=format&fit=crop&w=900&q=80",
+  "https://customer-assets.emergentagent.com/job_reverent-kalam-8/artifacts/4bhrl54s_image.png",
+  "https://customer-assets.emergentagent.com/job_reverent-kalam-8/artifacts/rlxg7gnz_image.png",
+  "https://customer-assets.emergentagent.com/job_reverent-kalam-8/artifacts/o4j10ql9_image.png",
+  "https://customer-assets.emergentagent.com/job_reverent-kalam-8/artifacts/o6piuyzo_image.png",
 ];
 
 export const HERO_VIDEO_URL =

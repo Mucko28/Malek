@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { STORY, BRAND, GALLERY } from "../../mock";
-import { Cloud, Sparkles, IceCream2 } from "lucide-react";
+import { Sparkles, IceCream2 } from "lucide-react";
 
 /** Hook: trigger a callback once when an element enters the viewport */
 const useInView = (threshold = 0.25) => {
@@ -115,14 +115,6 @@ const About = () => {
               <div className="mt-8 inline-flex items-center gap-3 text-[12px] tracking-[0.25em] uppercase text-[#2a2724]/60">
                 <span className="w-8 h-px bg-[#2a2724]/30" />
                 Slatiňany · ČR
-              </div>
-
-              {/* badge feature */}
-              <div className="mt-10 hidden md:flex items-center gap-3 px-4 py-3 rounded-2xl bg-[#2a2724] text-[#F4EFE8] max-w-[260px]">
-                <Cloud className="w-5 h-5 shrink-0 text-[#C46B5B]" />
-                <span className="text-[13px] leading-snug">
-                  Točíme i v dešti — ve vinotece je vždy sucho.
-                </span>
               </div>
             </div>
           </div>
