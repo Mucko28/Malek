@@ -1,5 +1,5 @@
 import React from "react";
-import { Phone, Mail, MapPin, Globe, ArrowUpRight, Instagram, Facebook } from "lucide-react";
+import { Phone, Mail, MapPin, ArrowUpRight, Instagram, Facebook } from "lucide-react";
 import { CONTACT, BRAND } from "../../mock";
 
 const Footer = () => {
@@ -15,7 +15,7 @@ const Footer = () => {
               05 — Kontakt
             </div>
             <h2 className="font-display text-[52px] md:text-[100px] leading-[0.9] font-black tracking-tight">
-              Stažte se<br />se s námi.
+              Jak nás<br />kontaktovat.
             </h2>
             <p className="mt-8 max-w-[44ch] text-[16px] leading-[1.7] text-white/65">
               Ozvěte se s dotazem, nápadem na novou příchuť nebo si rovnou
@@ -44,10 +44,10 @@ const Footer = () => {
                 href: `mailto:${CONTACT.email}`,
               },
               {
-                Icon: Globe,
-                label: "Web",
-                value: CONTACT.web,
-                href: `https://${CONTACT.web}`,
+                Icon: Instagram,
+                label: "Instagram",
+                value: "@zmrzlinamalekslatinany",
+                href: CONTACT.instagram,
               },
             ].map((c) => (
               <a

@@ -32,6 +32,20 @@ export const STORY = {
   ],
 };
 
+export const OFFER = {
+  intro: "U nás si vyberete na sladko i k posezení.",
+  description:
+    "Točená zmrzlina v křupavém kornoutu, ovocné tříště, domácí zákusky a k tomu vychlazené sklenky vína nebo poctivá káva ve stínu pergoly.",
+  categories: [
+    { name: "Točená zmrzlina", note: "Krémová · Z farmy" },
+    { name: "Ovocné tříště", note: "Ledové & svěží" },
+    { name: "Domácí zákusky", note: "Z naší cukrárny" },
+    { name: "Káva", note: "Espresso, latte, cappuccino" },
+    { name: "Vína", note: "Sklenka i lahev" },
+    { name: "Limonády & nápoje", note: "Domácí výroba" },
+  ],
+};
+
 export const MENU = {
   softServe: {
     title: "Točená zmrzlina",
@@ -59,12 +73,6 @@ export const MENU = {
       { name: "Borůvková", note: "Lesní sběr", color: "#5C5A8E" },
     ],
   },
-  pricing: [
-    { label: "Malá kopečka", price: "29 Kč" },
-    { label: "Velká kopečka", price: "45 Kč" },
-    { label: "Tříšť (250 ml)", price: "39 Kč" },
-    { label: "Tříšť (400 ml)", price: "59 Kč" },
-  ],
 };
 
 export const HOURS = [

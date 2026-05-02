@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { STORY, BRAND, GALLERY } from "../../mock";
-import { Sparkles, IceCream2 } from "lucide-react";
+import { STORY, GALLERY } from "../../mock";
 
 /** Hook: trigger a callback once when an element enters the viewport */
 const useInView = (threshold = 0.25) => {
@@ -145,7 +144,7 @@ const About = () => {
               <Stat
                 value="100"
                 suffix=" %"
-                label="Točeno na místě"
+                label="Točená radost"
                 decimals={0}
               />
             </div>
@@ -169,16 +168,6 @@ const About = () => {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-
-        {/* huge brand watermark */}
-        <div className="mt-24 -mx-6 md:-mx-16 select-none pointer-events-none overflow-hidden">
-          <div className="font-display font-black text-[#2a2724]/[0.06] leading-none text-[22vw] tracking-tighter whitespace-nowrap flex items-center gap-12">
-            <IceCream2 className="w-[10vw] h-[10vw]" strokeWidth={1.4} />
-            {BRAND.short.toUpperCase()}
-            <Sparkles className="w-[6vw] h-[6vw]" strokeWidth={1.4} />
-            {BRAND.city.toUpperCase()}
           </div>
         </div>
       </div>

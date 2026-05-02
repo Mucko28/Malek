@@ -36,13 +36,6 @@ const Home = () => {
         <Drip color="#2a2724" height={70} />
       </div>
       <Menu />
-      <Marquee
-        items={["NATOČ SI", "OCHUTNEJ", "VRAC SE", "TOČENÁ RADOST"]}
-        bg="#1a1816"
-        fg="#F4EFE8"
-        accent="#C46B5B"
-        speed={50}
-      />
       <Reviews />
       <Footer />
       <Toaster />

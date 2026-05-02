@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Clock, MapPin, Phone, Navigation } from "lucide-react";
-import { CONTACT, HOURS, HOURS_RANGES, GALLERY } from "../../mock";
+import { CONTACT, HOURS, HOURS_RANGES } from "../../mock";
 
 const Visit = () => {
   const today = new Date().getDay();
@@ -183,35 +183,6 @@ const Visit = () => {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Gallery — overlapping varied heights */}
-        <div className="mt-14 grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
-          {GALLERY.map((src, i) => (
-            <div
-              key={i}
-              className={`relative overflow-hidden rounded-2xl group transition-transform duration-500 hover:-translate-y-1 ${
-                [
-                  "aspect-[4/5]",
-                  "aspect-[3/4] md:translate-y-8",
-                  "aspect-[4/5]",
-                  "aspect-[3/4] md:translate-y-8",
-                  "aspect-[4/5]",
-                ][i % 5]
-              }`}
-            >
-              <img
-                src={src}
-                alt=""
-                loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#2a2724]/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="absolute bottom-3 left-3 right-3 text-white text-[10px] tracking-[0.3em] uppercase opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500">
-                Slatiňany · {String(i + 1).padStart(2, "0")}
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </section>
