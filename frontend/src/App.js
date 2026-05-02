@@ -1,15 +1,25 @@
 import React from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./components/site/Navbar";
+import SideDock from "./components/site/SideDock";
 import HeroVideo from "./components/site/HeroVideo";
+import About from "./components/site/About";
+import Menu from "./components/site/Menu";
+import Visit from "./components/site/Visit";
+import Reviews from "./components/site/Reviews";
+import Footer from "./components/site/Footer";
 import { Toaster } from "./components/ui/toaster";
 
 const Home = () => {
   return (
     <div className="min-h-screen bg-[#A8A099] text-[#2a2724] font-sans">
-      <Navbar />
+      <SideDock />
       <HeroVideo />
+      <About />
+      <Menu />
+      <Visit />
+      <Reviews />
+      <Footer />
     </div>
   );
 };
