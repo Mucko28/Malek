@@ -93,9 +93,9 @@ const HeroVideo = () => {
       if (dur && !Number.isNaN(dur)) {
         const tgt = targetTimeRef.current;
         const cur = currentSetRef.current;
-        // Light ease toward target: feels smoother than instant jumps
-        const next = cur + (tgt - cur) * 0.25;
-        if (Math.abs(next - cur) > 0.002) {
+        // Smoother ease (smaller factor = more lag, fluffier trailing motion)
+        const next = cur + (tgt - cur) * 0.15;
+        if (Math.abs(next - cur) > 0.001) {
           currentSetRef.current = next;
           try {
             v.currentTime = Math.max(0, Math.min(dur - 0.001, next));
@@ -158,13 +158,13 @@ const HeroVideo = () => {
       className="relative w-full"
       style={{
         // Tall scroll distance => more pixels per frame => smoother feel
-        height: reducedMotion || isMobile ? "100vh" : "400vh",
+        height: reducedMotion || isMobile ? "100vh" : "650vh",
       }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#A8A099]">
         <video
           ref={videoRef}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-contain"
           muted
           playsInline
           preload="auto"
