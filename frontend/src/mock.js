@@ -68,13 +68,25 @@ export const MENU = {
 };
 
 export const HOURS = [
-  { day: "Pondělí", time: "13:00 – 16:30" },
-  { day: "Úterý", time: "13:00 – 16:50" },
-  { day: "Středa", time: "13:00 – 17:00" },
-  { day: "Čtvrtek", time: "13:00 – 16:10" },
-  { day: "Pátek", time: "13:00 – 17:00" },
-  { day: "Sobota", time: "13:00 – 16:20" },
-  { day: "Neděle", time: "13:00 – 16:00" },
+  { day: "Pondělí", time: "10:00 – 18:30" },
+  { day: "Úterý", time: "9:00 – 18:30" },
+  { day: "Středa", time: "9:00 – 18:30" },
+  { day: "Čtvrtek", time: "9:00 – 18:30" },
+  { day: "Pátek", time: "9:00 – 18:30" },
+  { day: "Sobota", time: "9:00 – 19:00" },
+  { day: "Neděle", time: "10:00 – 18:30" },
+];
+
+// Parsed schedule for the "open now" indicator (24h)
+// Index matches HOURS above (Mon=0 ... Sun=6)
+export const HOURS_RANGES = [
+  { open: 10, close: 18.5 }, // Po
+  { open: 9, close: 18.5 },  // Út
+  { open: 9, close: 18.5 },  // St
+  { open: 9, close: 18.5 },  // Čt
+  { open: 9, close: 18.5 },  // Pá
+  { open: 9, close: 19 },    // So
+  { open: 10, close: 18.5 }, // Ne
 ];
 
 export const CONTACT = {
