@@ -27,27 +27,27 @@ const Navbar = () => {
           className={cn(
             "flex items-center justify-between gap-4 transition-all duration-300",
             scrolled
-              ? "bg-[#F7C6CF]/85 backdrop-blur-md rounded-full px-4 py-2 shadow-[0_8px_30px_rgba(190,60,90,0.12)]"
+              ? "bg-white/12 backdrop-blur-md rounded-full px-4 py-2 shadow-[0_8px_30px_rgba(0,0,0,0.18)] ring-1 ring-white/15"
               : ""
           )}
         >
           {/* Logo */}
           <a href="#home" className="flex items-center gap-2 shrink-0">
-            <div className="w-11 h-11 rounded-full bg-white/70 backdrop-blur grid place-items-center shadow-sm">
-              <IceCream2 className="w-6 h-6 text-[#8E2A4A]" strokeWidth={2.2} />
+            <div className="w-11 h-11 rounded-full bg-white/15 backdrop-blur grid place-items-center ring-1 ring-white/25">
+              <IceCream2 className="w-6 h-6 text-white" strokeWidth={2.2} />
             </div>
             <div className="leading-none font-display">
-              <div className="text-[18px] font-extrabold tracking-wide text-[#8E2A4A]">
+              <div className="text-[18px] font-extrabold tracking-wide text-white">
                 {BRAND.short}
               </div>
-              <div className="text-[10px] tracking-[0.25em] text-[#8E2A4A]/70 mt-0.5">
+              <div className="text-[10px] tracking-[0.25em] text-white/70 mt-0.5">
                 CO.
               </div>
             </div>
           </a>
 
           {/* Pill nav */}
-          <nav className="hidden lg:flex items-center bg-white/55 backdrop-blur-md rounded-full px-2 py-2 shadow-[0_8px_24px_rgba(190,60,90,0.08)]">
+          <nav className="hidden lg:flex items-center bg-white/12 backdrop-blur-md rounded-full px-2 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.15)] ring-1 ring-white/15">
             {NAV_LINKS.map((link) => {
               const isActive = active === link.label;
               return (
@@ -58,8 +58,8 @@ const Navbar = () => {
                   className={cn(
                     "px-6 py-2.5 rounded-full text-[15px] font-medium transition-all duration-300",
                     isActive
-                      ? "bg-white text-[#8E2A4A] shadow-[0_6px_18px_rgba(190,60,90,0.18)]"
-                      : "text-[#5b1f33]/80 hover:text-[#8E2A4A]"
+                      ? "bg-white text-[#2a2724] shadow-[0_6px_18px_rgba(0,0,0,0.22)]"
+                      : "text-white/85 hover:text-white"
                   )}
                 >
                   {link.label}
@@ -74,7 +74,7 @@ const Navbar = () => {
               <button
                 key={i}
                 aria-label="icon-button"
-                className="w-11 h-11 rounded-full bg-white/55 backdrop-blur-md grid place-items-center text-[#8E2A4A] hover:bg-white hover:scale-105 transition-all duration-300 shadow-[0_6px_18px_rgba(190,60,90,0.10)]"
+                className="w-11 h-11 rounded-full bg-white/12 backdrop-blur-md grid place-items-center text-white hover:bg-white hover:text-[#2a2724] hover:scale-105 transition-all duration-300 ring-1 ring-white/15 shadow-[0_6px_18px_rgba(0,0,0,0.15)]"
               >
                 <Icon className="w-[18px] h-[18px]" strokeWidth={2} />
               </button>
@@ -84,7 +84,7 @@ const Navbar = () => {
           {/* Mobile toggle */}
           <button
             onClick={() => setMobileOpen((v) => !v)}
-            className="lg:hidden w-11 h-11 rounded-full bg-white/70 grid place-items-center text-[#8E2A4A]"
+            className="lg:hidden w-11 h-11 rounded-full bg-white/15 grid place-items-center text-white ring-1 ring-white/20"
             aria-label="menu"
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -93,7 +93,7 @@ const Navbar = () => {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <div className="lg:hidden mt-3 bg-white/90 backdrop-blur-md rounded-3xl px-4 py-4 shadow-lg">
+          <div className="lg:hidden mt-3 bg-white/95 backdrop-blur-md rounded-3xl px-4 py-4 shadow-lg">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.label}
@@ -102,7 +102,7 @@ const Navbar = () => {
                   setActive(link.label);
                   setMobileOpen(false);
                 }}
-                className="block px-4 py-3 rounded-full text-[#5b1f33] hover:bg-[#F7C6CF]/60 font-medium"
+                className="block px-4 py-3 rounded-full text-[#2a2724] hover:bg-black/5 font-medium"
               >
                 {link.label}
               </a>
