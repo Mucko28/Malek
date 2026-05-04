@@ -7,7 +7,9 @@ import {
   Save,
   Check,
   ArrowLeft,
-  GripVertical,
+  ChevronUp,
+  ChevronDown,
+  IceCream2,
 } from "lucide-react";
 import { BRAND } from "../mock";
 
@@ -32,7 +34,6 @@ const Admin = () => {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
   const [booting, setBooting] = useState(!!token);
 
-  // On mount, verify stored token
   useEffect(() => {
     if (!token) {
       setBooting(false);
@@ -68,7 +69,7 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4EFE8] text-[#2a2724] font-sans">
+    <div className="min-h-screen font-sans">
       {token ? (
         <Dashboard token={token} onLogout={handleLogout} />
       ) : (
@@ -83,6 +84,59 @@ const Admin = () => {
   );
 };
 
+/* -------------------------------------------------------------------------
+   Decorative aesthetic background shared by login + dashboard
+------------------------------------------------------------------------- */
+const AestheticBg = ({ variant = "light" }) => {
+  const light = variant === "light";
+  return (
+    <>
+      {/* Base gradient */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: light
+            ? "linear-gradient(180deg, #FBF5EC 0%, #F0E6D6 55%, #E7D9C2 100%)"
+            : "linear-gradient(180deg, #2a2724 0%, #1a1816 100%)",
+        }}
+      />
+      {/* Soft terracotta blob top-right */}
+      <div
+        className="absolute -top-40 -right-32 w-[640px] h-[640px] rounded-full blur-[140px] pointer-events-none"
+        style={{
+          background: light ? "rgba(196,107,91,0.22)" : "rgba(196,107,91,0.20)",
+        }}
+      />
+      {/* Soft warm blob bottom-left */}
+      <div
+        className="absolute -bottom-56 -left-40 w-[720px] h-[720px] rounded-full blur-[160px] pointer-events-none"
+        style={{
+          background: light ? "rgba(168,160,153,0.35)" : "rgba(168,160,153,0.18)",
+        }}
+      />
+      {/* Subtle coffee blob centre-right */}
+      <div
+        className="absolute top-1/3 right-1/4 w-[420px] h-[420px] rounded-full blur-[120px] pointer-events-none opacity-40"
+        style={{ background: light ? "#D8C4A8" : "#3a3430" }}
+      />
+      {/* Subtle noise grain via SVG */}
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.06] mix-blend-overlay"
+        aria-hidden="true"
+      >
+        <filter id="grain">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" />
+          <feColorMatrix type="saturate" values="0" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#grain)" />
+      </svg>
+    </>
+  );
+};
+
+/* -------------------------------------------------------------------------
+   Login screen
+------------------------------------------------------------------------- */
 const LoginScreen = ({ onSuccess }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -110,41 +164,50 @@ const LoginScreen = ({ onSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen grid place-items-center bg-[#2a2724] text-[#F4EFE8] p-6 relative overflow-hidden">
-      <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-[#C46B5B]/15 blur-[120px] pointer-events-none" />
-      <div className="absolute -bottom-40 -right-32 w-[600px] h-[600px] rounded-full bg-[#A8A099]/10 blur-[140px] pointer-events-none" />
+    <div className="relative min-h-screen grid place-items-center p-6 overflow-hidden">
+      <AestheticBg variant="dark" />
 
-      <div className="relative w-full max-w-[420px]">
+      {/* Rotating giant watermark behind */}
+      <div className="absolute inset-0 grid place-items-center pointer-events-none select-none">
+        <div
+          className="font-display font-black text-white/[0.04] text-[22vw] leading-none tracking-tighter whitespace-nowrap"
+          style={{ transform: "rotate(-6deg)" }}
+        >
+          MÁLEK · ADMIN
+        </div>
+      </div>
+
+      <div className="relative w-full max-w-[460px]">
         <a
           href="/"
-          className="inline-flex items-center gap-2 text-[11px] tracking-[0.3em] uppercase text-white/55 hover:text-white mb-8"
+          className="inline-flex items-center gap-2 text-[11px] tracking-[0.3em] uppercase text-white/55 hover:text-white mb-10 transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           Zpět na web
         </a>
 
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-11 h-11 rounded-full bg-[#C46B5B] grid place-items-center">
-              <Lock className="w-4 h-4 text-white" />
+        <div className="mb-10 text-white">
+          <div className="flex items-center gap-4 mb-5">
+            <div className="w-14 h-14 rounded-2xl bg-[#C46B5B] grid place-items-center shadow-[0_14px_30px_-10px_rgba(196,107,91,0.6)] rotate-3">
+              <Lock className="w-5 h-5 text-white" />
             </div>
             <div>
               <div className="text-[11px] tracking-[0.3em] uppercase text-white/55">
                 {BRAND.name} · Admin
               </div>
-              <div className="font-display font-black text-[26px] leading-none mt-1">
+              <div className="font-display font-black text-[32px] leading-none mt-2">
                 Přihlášení
               </div>
             </div>
           </div>
-          <p className="text-[14px] text-white/55 leading-relaxed max-w-[34ch]">
+          <p className="text-[14px] text-white/60 leading-relaxed max-w-[34ch]">
             Správa dnešní nabídky příchutí, které se zobrazují v úvodu webu.
           </p>
         </div>
 
         <form
           onSubmit={submit}
-          className="bg-white/[0.04] ring-1 ring-white/10 rounded-3xl p-6 md:p-7 backdrop-blur-md"
+          className="relative bg-white/[0.06] ring-1 ring-white/10 rounded-3xl p-7 md:p-8 backdrop-blur-xl shadow-[0_30px_80px_-20px_rgba(0,0,0,0.5)]"
         >
           <label className="block">
             <span className="text-[11px] tracking-[0.3em] uppercase text-white/60">
@@ -155,13 +218,13 @@ const LoginScreen = ({ onSuccess }) => {
               autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-2 w-full bg-white/[0.06] ring-1 ring-white/10 rounded-xl px-4 py-3 text-[15px] outline-none focus:ring-[#C46B5B] transition-colors"
+              className="mt-2.5 w-full bg-white/[0.06] ring-1 ring-white/10 rounded-2xl px-5 py-4 text-[16px] text-white outline-none focus:ring-2 focus:ring-[#C46B5B] transition-all"
               placeholder="Zmrkamalek"
               required
             />
           </label>
 
-          <label className="block mt-5">
+          <label className="block mt-6">
             <span className="text-[11px] tracking-[0.3em] uppercase text-white/60">
               Heslo
             </span>
@@ -170,14 +233,14 @@ const LoginScreen = ({ onSuccess }) => {
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-2 w-full bg-white/[0.06] ring-1 ring-white/10 rounded-xl px-4 py-3 text-[15px] outline-none focus:ring-[#C46B5B] transition-colors"
+              className="mt-2.5 w-full bg-white/[0.06] ring-1 ring-white/10 rounded-2xl px-5 py-4 text-[16px] text-white outline-none focus:ring-2 focus:ring-[#C46B5B] transition-all"
               placeholder="••••••••"
               required
             />
           </label>
 
           {err && (
-            <div className="mt-5 px-4 py-3 rounded-xl bg-[#C46B5B]/20 text-[#F7C4B5] text-[13px] ring-1 ring-[#C46B5B]/30">
+            <div className="mt-6 px-4 py-3 rounded-xl bg-[#C46B5B]/20 text-[#F7C4B5] text-[13px] ring-1 ring-[#C46B5B]/30">
               {err}
             </div>
           )}
@@ -185,7 +248,7 @@ const LoginScreen = ({ onSuccess }) => {
           <button
             type="submit"
             disabled={loading}
-            className="mt-6 w-full inline-flex items-center justify-center gap-2 bg-[#C46B5B] hover:bg-[#A8543F] disabled:opacity-60 text-white font-medium py-3.5 rounded-full transition-colors"
+            className="mt-7 w-full inline-flex items-center justify-center gap-2 bg-[#C46B5B] hover:bg-[#A8543F] disabled:opacity-60 text-white font-medium py-4 rounded-2xl text-[15px] tracking-wide transition-colors shadow-[0_14px_30px_-10px_rgba(196,107,91,0.5)]"
           >
             {loading ? "Přihlašuji…" : "Přihlásit se"}
           </button>
@@ -195,6 +258,9 @@ const LoginScreen = ({ onSuccess }) => {
   );
 };
 
+/* -------------------------------------------------------------------------
+   Dashboard
+------------------------------------------------------------------------- */
 const Dashboard = ({ token, onLogout }) => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -250,7 +316,6 @@ const Dashboard = ({ token, onLogout }) => {
     setErr("");
     setSaving(true);
     try {
-      // drop empty-name rows
       const clean = items
         .map((it) => ({ name: (it.name || "").trim(), color: it.color }))
         .filter((it) => it.name.length > 0)
@@ -270,7 +335,7 @@ const Dashboard = ({ token, onLogout }) => {
       const data = await res.json();
       setItems(data.items || []);
       setSaved(true);
-      setTimeout(() => setSaved(false), 2200);
+      setTimeout(() => setSaved(false), 2400);
     } catch (e) {
       setErr(e.message);
     } finally {
@@ -279,78 +344,106 @@ const Dashboard = ({ token, onLogout }) => {
   };
 
   return (
-    <div>
-      {/* Header bar */}
-      <header className="sticky top-0 z-20 bg-[#2a2724] text-[#F4EFE8]">
-        <div className="mx-auto max-w-[960px] px-6 md:px-10 py-5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 min-w-0">
-            <a
-              href="/"
-              className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 ring-1 ring-white/15 grid place-items-center transition-colors shrink-0"
-              title="Zpět na web"
-            >
-              <ArrowLeft className="w-4 h-4" />
-            </a>
-            <div className="min-w-0">
-              <div className="text-[10px] tracking-[0.3em] uppercase text-white/50">
-                {BRAND.name} · Admin
-              </div>
-              <div className="font-display font-black text-[18px] leading-none mt-1 truncate">
-                Dnešní nabídka
+    <div className="relative min-h-screen overflow-x-hidden text-[#2a2724]">
+      <AestheticBg variant="light" />
+
+      {/* Decorative rotating word in the page background */}
+      <div className="absolute top-[40vh] left-1/2 -translate-x-1/2 pointer-events-none select-none z-0">
+        <div
+          className="font-display font-black text-[#2a2724]/[0.05] text-[26vw] leading-none tracking-tighter whitespace-nowrap"
+          style={{ transform: "rotate(-4deg)" }}
+        >
+          TOČENÁ RADOST
+        </div>
+      </div>
+
+      {/* Header */}
+      <header className="relative z-30 sticky top-0">
+        <div className="bg-[#2a2724]/95 backdrop-blur-lg text-[#F4EFE8] border-b border-white/5">
+          <div className="mx-auto max-w-[1080px] px-5 md:px-10 py-4 md:py-5 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4 min-w-0">
+              <a
+                href="/"
+                className="w-11 h-11 rounded-2xl bg-white/10 hover:bg-white/20 ring-1 ring-white/10 grid place-items-center transition-colors shrink-0"
+                title="Zpět na web"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </a>
+              <div className="min-w-0">
+                <div className="text-[10px] tracking-[0.3em] uppercase text-white/50">
+                  {BRAND.name} · Admin
+                </div>
+                <div className="font-display font-black text-[20px] md:text-[22px] leading-none mt-1 truncate">
+                  Dnešní nabídka
+                </div>
               </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={save}
-              disabled={saving}
-              className="inline-flex items-center gap-2 bg-[#C46B5B] hover:bg-[#A8543F] disabled:opacity-60 text-white px-4 py-2 rounded-full text-[13px] font-medium transition-colors"
-            >
-              {saved ? (
-                <>
-                  <Check className="w-4 h-4" />
-                  Uloženo
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4" />
-                  {saving ? "Ukládám…" : "Uložit"}
-                </>
-              )}
-            </button>
-            <button
-              onClick={onLogout}
-              className="inline-flex items-center gap-2 bg-white/[0.08] hover:bg-white/15 ring-1 ring-white/10 text-white px-3.5 py-2 rounded-full text-[13px] transition-colors"
-              title="Odhlásit"
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Odhlásit</span>
-            </button>
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={save}
+                disabled={saving}
+                className="inline-flex items-center gap-2.5 bg-[#C46B5B] hover:bg-[#A8543F] disabled:opacity-60 text-white px-5 md:px-6 py-3 rounded-full text-[14px] font-semibold transition-all shadow-[0_8px_20px_-6px_rgba(196,107,91,0.5)] hover:shadow-[0_10px_25px_-6px_rgba(196,107,91,0.7)] hover:-translate-y-0.5"
+              >
+                {saved ? (
+                  <>
+                    <Check className="w-4 h-4" />
+                    <span className="hidden sm:inline">Uloženo</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    <span className="hidden sm:inline">
+                      {saving ? "Ukládám…" : "Uložit"}
+                    </span>
+                    <span className="sm:hidden">
+                      {saving ? "…" : "Uložit"}
+                    </span>
+                  </>
+                )}
+              </button>
+              <button
+                onClick={onLogout}
+                className="inline-flex items-center gap-2 bg-white/[0.08] hover:bg-white/15 ring-1 ring-white/10 text-white px-4 md:px-5 py-3 rounded-full text-[14px] transition-colors"
+                title="Odhlásit"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">Odhlásit</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-[960px] px-6 md:px-10 py-10 md:py-14">
-        <div className="flex items-baseline justify-between gap-4 mb-8">
+      {/* Main */}
+      <main className="relative z-10 mx-auto max-w-[1080px] px-5 md:px-10 py-12 md:py-16">
+        <div className="flex items-end justify-between gap-4 mb-10">
           <div>
-            <div className="text-[11px] tracking-[0.4em] uppercase text-[#C46B5B] font-medium">
+            <div className="inline-flex items-center gap-3 text-[11px] tracking-[0.4em] uppercase text-[#C46B5B] font-semibold">
+              <span className="w-8 h-px bg-[#C46B5B]" />
               Příchutě v úvodu
             </div>
-            <h2 className="font-display font-black text-[32px] md:text-[44px] leading-[1] mt-3">
-              Upravte dnešní ponuku
+            <h2 className="font-display font-black text-[38px] md:text-[56px] leading-[0.95] mt-4">
+              Upravte dnešní<br />
+              <span className="text-[#C46B5B]">nabídku.</span>
             </h2>
-            <p className="mt-3 text-[14px] text-[#2a2724]/70 max-w-[56ch]">
-              Až 10 položek. Zobrazují se postupně při scrollování hero videa
-              na úvodní stránce — v pořadí, v jakém je nastavíte.
+            <p className="mt-5 text-[15px] text-[#2a2724]/70 max-w-[56ch] leading-relaxed">
+              Až 10 položek. Zobrazují se postupně při scrollování úvodního
+              videa — v pořadí, v jakém je nastavíte.
             </p>
           </div>
-          <div className="shrink-0 font-mono text-[12px] text-[#2a2724]/55 tabular-nums">
-            {items.length} / 10
+          <div className="shrink-0 text-right">
+            <div className="font-display font-black text-[42px] md:text-[52px] leading-none text-[#2a2724] tabular-nums">
+              {items.length}
+              <span className="text-[#2a2724]/30">/10</span>
+            </div>
+            <div className="text-[10px] tracking-[0.3em] uppercase text-[#2a2724]/50 mt-1">
+              položek
+            </div>
           </div>
         </div>
 
         {err && (
-          <div className="mb-4 px-4 py-3 rounded-xl bg-[#C46B5B]/15 text-[#8A3A2A] text-[13px] ring-1 ring-[#C46B5B]/30">
+          <div className="mb-5 px-5 py-4 rounded-2xl bg-[#C46B5B]/15 text-[#8A3A2A] text-[14px] ring-1 ring-[#C46B5B]/30 font-medium">
             {err}
           </div>
         )}
@@ -359,8 +452,10 @@ const Dashboard = ({ token, onLogout }) => {
           <div className="text-center py-20 text-[#2a2724]/50 text-[11px] tracking-[0.3em] uppercase">
             Načítám…
           </div>
+        ) : items.length === 0 ? (
+          <EmptyState onAdd={addItem} />
         ) : (
-          <ul className="space-y-3">
+          <ul className="space-y-3.5">
             {items.map((it, i) => (
               <FlavourRow
                 key={i}
@@ -377,30 +472,41 @@ const Dashboard = ({ token, onLogout }) => {
           </ul>
         )}
 
-        <div className="mt-6 flex items-center justify-between">
-          <button
-            onClick={addItem}
-            disabled={items.length >= 10}
-            className="inline-flex items-center gap-2 bg-[#2a2724] hover:bg-[#1a1816] disabled:opacity-40 text-white px-5 py-3 rounded-full text-[13px] font-medium transition-colors"
-          >
-            <Plus className="w-4 h-4" />
-            Přidat příchuť
-          </button>
+        {items.length > 0 && (
+          <div className="mt-8 flex flex-wrap items-center gap-5">
+            <button
+              onClick={addItem}
+              disabled={items.length >= 10}
+              className="inline-flex items-center gap-2.5 bg-[#2a2724] hover:bg-[#1a1816] disabled:opacity-40 text-white px-6 py-4 rounded-full text-[14px] font-semibold transition-all hover:-translate-y-0.5 shadow-[0_10px_25px_-10px_rgba(42,39,36,0.5)]"
+            >
+              <span className="w-6 h-6 rounded-full bg-[#C46B5B] grid place-items-center">
+                <Plus className="w-3.5 h-3.5" strokeWidth={2.5} />
+              </span>
+              Přidat příchuť
+            </button>
 
-          {items.length >= 10 && (
-            <span className="text-[12px] text-[#2a2724]/60">
-              Maximální počet je 10.
-            </span>
-          )}
-        </div>
-
-        <div className="mt-16 p-5 rounded-2xl bg-white ring-1 ring-[#2a2724]/10">
-          <div className="text-[11px] tracking-[0.3em] uppercase text-[#2a2724]/60 mb-2">
-            Tip
+            {items.length >= 10 && (
+              <span className="text-[13px] text-[#2a2724]/60">
+                Dosažen maximální počet 10 položek.
+              </span>
+            )}
           </div>
-          <div className="text-[14px] text-[#2a2724]/80 leading-relaxed">
-            Barva je jen vizuální označení příchuti v úvodním panelu (kruhová
-            ikonka). Vyberte barvu, která ji nejlépe vystihuje.
+        )}
+
+        {/* Tip card */}
+        <div className="mt-16 p-6 md:p-7 rounded-3xl bg-white/70 backdrop-blur ring-1 ring-[#2a2724]/10 shadow-[0_14px_40px_-14px_rgba(42,39,36,0.14)] flex items-start gap-4">
+          <div className="w-11 h-11 rounded-2xl bg-[#C46B5B] grid place-items-center text-white shrink-0 rotate-3">
+            <IceCream2 className="w-5 h-5" strokeWidth={2} />
+          </div>
+          <div>
+            <div className="text-[11px] tracking-[0.3em] uppercase text-[#2a2724]/60 mb-2 font-semibold">
+              Tip
+            </div>
+            <div className="text-[14.5px] text-[#2a2724]/80 leading-relaxed max-w-[66ch]">
+              Barva je jen vizuální označení příchuti v úvodním panelu
+              (kruhová ikonka). Vyberte odstín, který ji nejlépe vystihuje —
+              nebo vlastní barvu přes paletu.
+            </div>
           </div>
         </div>
       </main>
@@ -408,6 +514,28 @@ const Dashboard = ({ token, onLogout }) => {
   );
 };
 
+const EmptyState = ({ onAdd }) => (
+  <div className="text-center py-16 bg-white/60 backdrop-blur rounded-3xl ring-1 ring-[#2a2724]/10">
+    <div className="w-16 h-16 rounded-full bg-[#C46B5B]/20 grid place-items-center mx-auto mb-5">
+      <IceCream2 className="w-7 h-7 text-[#C46B5B]" strokeWidth={1.8} />
+    </div>
+    <div className="font-display font-black text-[22px]">Zatím žádné příchutě</div>
+    <p className="mt-2 text-[14px] text-[#2a2724]/60">
+      Přidejte první položku dnešní nabídky.
+    </p>
+    <button
+      onClick={onAdd}
+      className="mt-6 inline-flex items-center gap-2.5 bg-[#2a2724] hover:bg-[#1a1816] text-white px-6 py-3.5 rounded-full text-[14px] font-semibold transition-colors"
+    >
+      <Plus className="w-4 h-4" />
+      Přidat příchuť
+    </button>
+  </div>
+);
+
+/* -------------------------------------------------------------------------
+   Row
+------------------------------------------------------------------------- */
 const FlavourRow = ({
   idx,
   item,
@@ -419,103 +547,122 @@ const FlavourRow = ({
   isLast,
 }) => {
   return (
-    <li className="group flex items-center gap-3 md:gap-4 p-3 md:p-4 bg-white rounded-2xl ring-1 ring-[#2a2724]/10 hover:ring-[#2a2724]/25 transition-all">
-      <div className="flex flex-col items-center gap-1 text-[#2a2724]/40 shrink-0">
+    <li className="group flex items-center gap-4 md:gap-5 p-4 md:p-5 bg-white rounded-3xl ring-1 ring-[#2a2724]/8 hover:ring-[#2a2724]/25 hover:shadow-[0_14px_40px_-14px_rgba(42,39,36,0.15)] transition-all">
+      {/* Order + move */}
+      <div className="flex flex-col items-center gap-1 shrink-0">
         <button
           onClick={onMoveUp}
           disabled={isFirst}
-          className="disabled:opacity-30 hover:text-[#2a2724] transition-colors"
+          className="w-8 h-8 rounded-full grid place-items-center text-[#2a2724]/40 hover:text-[#2a2724] hover:bg-[#2a2724]/5 disabled:opacity-25 disabled:pointer-events-none transition-colors"
           title="Posunout nahoru"
         >
-          <GripVertical className="w-4 h-4" />
+          <ChevronUp className="w-4 h-4" strokeWidth={2.5} />
         </button>
-        <span className="font-mono text-[10px] tabular-nums">
+        <span className="font-mono text-[11px] tabular-nums text-[#2a2724]/45 font-semibold">
           {String(idx + 1).padStart(2, "0")}
         </span>
         <button
           onClick={onMoveDown}
           disabled={isLast}
-          className="disabled:opacity-30 hover:text-[#2a2724] transition-colors rotate-180"
+          className="w-8 h-8 rounded-full grid place-items-center text-[#2a2724]/40 hover:text-[#2a2724] hover:bg-[#2a2724]/5 disabled:opacity-25 disabled:pointer-events-none transition-colors"
           title="Posunout dolů"
         >
-          <GripVertical className="w-4 h-4" />
+          <ChevronDown className="w-4 h-4" strokeWidth={2.5} />
         </button>
       </div>
 
+      {/* Color picker */}
       <ColorPicker
         value={item.color}
         onChange={(color) => onChange({ color })}
       />
 
+      {/* Name */}
       <input
         type="text"
         value={item.name}
         onChange={(e) => onChange({ name: e.target.value })}
         placeholder="Název příchuti"
-        className="flex-1 bg-transparent border-0 outline-none text-[16px] font-display font-bold placeholder:text-[#2a2724]/30 min-w-0"
+        className="flex-1 bg-transparent border-0 outline-none text-[20px] md:text-[22px] font-display font-bold placeholder:text-[#2a2724]/25 min-w-0 py-2"
         maxLength={60}
       />
 
+      {/* Delete */}
       <button
         onClick={onRemove}
-        className="w-9 h-9 rounded-full bg-transparent hover:bg-[#C46B5B]/15 text-[#2a2724]/40 hover:text-[#C46B5B] grid place-items-center transition-colors shrink-0"
+        className="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-transparent hover:bg-[#C46B5B] text-[#2a2724]/40 hover:text-white grid place-items-center transition-all shrink-0"
         title="Odstranit"
       >
-        <Trash2 className="w-4 h-4" />
+        <Trash2 className="w-5 h-5" strokeWidth={1.8} />
       </button>
     </li>
   );
 };
 
+/* -------------------------------------------------------------------------
+   Color picker
+------------------------------------------------------------------------- */
 const ColorPicker = ({ value, onChange }) => {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative shrink-0">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-10 h-10 rounded-full ring-2 ring-[#2a2724]/15 hover:ring-[#2a2724]/40 transition-all relative overflow-hidden"
+        className="relative w-14 h-14 md:w-16 md:h-16 rounded-full ring-2 ring-[#2a2724]/10 hover:ring-[#2a2724]/40 hover:scale-105 transition-all overflow-hidden shadow-[0_6px_16px_-4px_rgba(42,39,36,0.15)]"
         style={{ background: value }}
-        title="Barva"
+        title="Vybrat barvu"
       >
         <span
-          className="absolute inset-1 rounded-full pointer-events-none"
+          className="absolute inset-2 rounded-full pointer-events-none"
           style={{
             background:
-              "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.5), transparent 60%)",
+              "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.55), transparent 60%)",
           }}
         />
       </button>
       {open && (
         <>
           <div
-            className="fixed inset-0 z-10"
+            className="fixed inset-0 z-30"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute left-0 top-12 z-20 bg-white ring-1 ring-[#2a2724]/15 rounded-2xl p-3 shadow-[0_20px_50px_rgba(0,0,0,0.15)] flex flex-wrap gap-2 w-[220px]">
-            {DEFAULT_COLORS.map((c) => (
-              <button
-                key={c}
-                onClick={() => {
-                  onChange(c);
-                  setOpen(false);
-                }}
-                className={`w-8 h-8 rounded-full ring-2 transition-all ${
-                  value === c
-                    ? "ring-[#2a2724]"
-                    : "ring-transparent hover:ring-[#2a2724]/30"
-                }`}
-                style={{ background: c }}
-                title={c}
-              />
-            ))}
-            <label className="w-8 h-8 rounded-full ring-2 ring-[#2a2724]/20 hover:ring-[#2a2724]/50 overflow-hidden cursor-pointer relative bg-gradient-to-br from-[#E94B7A] via-[#F0DC73] to-[#5C5A8E]">
-              <input
-                type="color"
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-              />
-            </label>
+          <div className="absolute left-0 top-[72px] z-40 bg-white ring-1 ring-[#2a2724]/10 rounded-3xl p-4 shadow-[0_30px_70px_-15px_rgba(42,39,36,0.3)] w-[280px]">
+            <div className="text-[10px] tracking-[0.3em] uppercase text-[#2a2724]/50 font-semibold mb-3 px-1">
+              Vyberte barvu
+            </div>
+            <div className="flex flex-wrap gap-2.5">
+              {DEFAULT_COLORS.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => {
+                    onChange(c);
+                    setOpen(false);
+                  }}
+                  className={`w-10 h-10 rounded-full transition-all ring-2 hover:scale-110 ${
+                    value === c
+                      ? "ring-[#2a2724]"
+                      : "ring-transparent hover:ring-[#2a2724]/30"
+                  }`}
+                  style={{ background: c }}
+                  title={c}
+                />
+              ))}
+              <label className="w-10 h-10 rounded-full ring-2 ring-[#2a2724]/15 hover:ring-[#2a2724]/45 hover:scale-110 overflow-hidden cursor-pointer relative transition-all">
+                <span
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "conic-gradient(from 0deg, #E94B7A, #F0A752, #F0DC73, #A8C795, #5C5A8E, #C4536A, #E94B7A)",
+                  }}
+                />
+                <input
+                  type="color"
+                  value={value}
+                  onChange={(e) => onChange(e.target.value)}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                />
+              </label>
+            </div>
           </div>
         </>
       )}
