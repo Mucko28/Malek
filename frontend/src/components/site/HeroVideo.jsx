@@ -259,38 +259,6 @@ const HeroVideo = () => {
       }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden bg-[#A8A099]">
-        {/* Aesthetic backdrop — sits behind the video, same tone as video bg
-            so the cone "floats" on an organic, living background. */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse 80% 60% at 50% 45%, #B8AFA3 0%, #A8A099 45%, #978F85 100%)",
-          }}
-        />
-        <div className="absolute -top-40 -left-32 w-[620px] h-[620px] rounded-full blur-[140px] pointer-events-none bg-[rgba(196,107,91,0.14)]" />
-        <div className="absolute -bottom-48 -right-32 w-[720px] h-[720px] rounded-full blur-[160px] pointer-events-none bg-[rgba(244,239,232,0.16)]" />
-        <div className="absolute top-1/3 left-1/4 w-[420px] h-[420px] rounded-full blur-[120px] pointer-events-none bg-[rgba(90,58,42,0.10)]" />
-        {/* subtle grain */}
-        <svg
-          className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.06] mix-blend-overlay"
-          aria-hidden="true"
-        >
-          <filter id="hero-grain">
-            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" />
-            <feColorMatrix type="saturate" values="0" />
-          </filter>
-          <rect width="100%" height="100%" filter="url(#hero-grain)" />
-        </svg>
-        {/* edge vignette so the video ice-cream pops a touch more */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse 100% 80% at 50% 50%, transparent 55%, rgba(0,0,0,0.18) 100%)",
-          }}
-        />
-
         <canvas
           ref={canvasRef}
           className="absolute inset-0 w-full h-full block"
@@ -381,20 +349,20 @@ const HeroVideo = () => {
 };
 
 /**
- * Right-rail flavour reveal — each name fades + slides in once scroll
+ * Left-rail flavour reveal — each name fades + slides in once scroll
  * progress crosses its threshold. Names only — no extras.
  */
 const FlavourReveal = ({ progress, flavours }) => {
   if (!flavours || flavours.length === 0) return null;
   return (
-    <div className="hidden md:block absolute right-7 lg:right-14 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
-      <div className="mb-6 flex items-center gap-3">
-        <span className="w-8 h-px bg-white/50" />
-        <span className="text-[11px] tracking-[0.45em] uppercase text-white/85 font-semibold">
+    <div className="hidden md:block absolute left-20 lg:left-24 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
+      <div className="mb-5 flex items-center gap-3">
+        <span className="w-6 h-px bg-white/40" />
+        <span className="text-[10px] tracking-[0.4em] uppercase text-white/75">
           Dnes točíme
         </span>
       </div>
-      <ul className="flex flex-col gap-3">
+      <ul className="flex flex-col gap-2.5">
         {flavours.slice(0, 10).map((f, i) => {
           const threshold = FLAVOUR_THRESHOLDS[i] ?? 0.7;
           const window = 0.05;
@@ -408,24 +376,24 @@ const FlavourReveal = ({ progress, flavours }) => {
               className="will-change-transform"
               style={{
                 opacity: local,
-                transform: `translateX(${(1 - local) * 42}px)`,
-                transition: "opacity 90ms linear, transform 90ms linear",
+                transform: `translateX(-${(1 - local) * 36}px)`,
+                transition: "opacity 80ms linear, transform 80ms linear",
               }}
             >
-              <div className="flex items-center gap-4 pl-2.5 pr-7 py-2.5 rounded-full bg-white/15 backdrop-blur-xl ring-1 ring-white/25 text-white shadow-[0_10px_30px_-8px_rgba(0,0,0,0.25)]">
+              <div className="flex items-center gap-3 pl-2 pr-5 py-2 rounded-full bg-white/10 backdrop-blur-md ring-1 ring-white/15 text-white">
                 <span
-                  className="relative w-11 h-11 rounded-full ring-2 ring-white/40 shrink-0 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.25)]"
+                  className="relative w-8 h-8 rounded-full ring-2 ring-white/30 shrink-0"
                   style={{ background: f.color }}
                 >
                   <span
-                    className="absolute inset-1.5 rounded-full"
+                    className="absolute inset-1 rounded-full"
                     style={{
                       background:
-                        "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.65), transparent 60%)",
+                        "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.55), transparent 60%)",
                     }}
                   />
                 </span>
-                <span className="font-display font-bold text-[17px] leading-none whitespace-nowrap tracking-tight">
+                <span className="font-display font-bold text-[15px] leading-none whitespace-nowrap">
                   {f.name}
                 </span>
               </div>
