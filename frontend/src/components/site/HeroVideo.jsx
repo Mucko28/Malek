@@ -1,5 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowDown } from "lucide-react";
+import {
+  ArrowDown,
+  Sun,
+  Cloud,
+  CloudSun,
+  CloudRain,
+  CloudSnow,
+  CloudFog,
+  CloudLightning,
+} from "lucide-react";
 import { BRAND, HOURS_RANGES, TODAY_FLAVOURS } from "../../mock";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
