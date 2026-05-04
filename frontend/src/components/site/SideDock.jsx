@@ -223,6 +223,15 @@ const SideDock = () => {
               <MapPin className="w-4 h-4 mt-0.5" />
               <span>{CONTACT.address}</span>
             </a>
+            <div className="pt-3 mt-3 border-t border-[#2a2724]/8">
+              <a
+                href="/admin"
+                className="inline-flex items-center gap-1.5 text-[10px] tracking-[0.3em] uppercase text-[#2a2724]/35 hover:text-[#2a2724] transition-colors"
+              >
+                <span className="w-1 h-1 rounded-full bg-[#2a2724]/30" />
+                Admin
+              </a>
+            </div>
           </div>
         </div>
       </div>

@@ -5,10 +5,9 @@ import { BRAND, HOURS_RANGES, TODAY_FLAVOURS } from "../../mock";
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Each flavour reveals at its own scroll-progress threshold.
-// Spread across early-to-mid hero so all 8 are visible by ~70% scroll.
+// Reveal thresholds for up to 10 flavours (if fewer, tail values are unused)
 const FLAVOUR_THRESHOLDS = [
-  0.04, 0.11, 0.18, 0.26, 0.34, 0.43, 0.52, 0.62,
+  0.04, 0.10, 0.16, 0.23, 0.30, 0.37, 0.45, 0.53, 0.60, 0.67,
 ];
 
 /**
@@ -31,6 +30,23 @@ const HeroVideo = () => {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [openNow, setOpenNow] = useState(false);
+  const [flavours, setFlavours] = useState(TODAY_FLAVOURS);
+
+  // Fetch live flavours (admin-editable). Falls back to defaults on failure.
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`${API}/flavours`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data.items) && data.items.length > 0) {
+          setFlavours(data.items);
+        }
+      } catch (e) {
+        // keep defaults
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -287,7 +303,7 @@ const HeroVideo = () => {
         </button>
 
         {/* Today's flavours — staggered reveal alongside scroll */}
-        <FlavourReveal progress={progress} />
+        <FlavourReveal progress={progress} flavours={flavours} />
 
         {/* BOTTOM CENTER — Live status pill (Otevřeno teď / Zavřeno) */}
         <div
@@ -336,7 +352,8 @@ const HeroVideo = () => {
  * Right-rail flavour reveal — each name fades + slides in once scroll
  * progress crosses its threshold. Names only — no extras.
  */
-const FlavourReveal = ({ progress }) => {
+const FlavourReveal = ({ progress, flavours }) => {
+  if (!flavours || flavours.length === 0) return null;
   return (
     <div className="hidden md:block absolute right-7 lg:right-12 top-1/2 -translate-y-1/2 z-10 pointer-events-none">
       <div className="mb-5 flex items-center gap-3">
@@ -346,7 +363,7 @@ const FlavourReveal = ({ progress }) => {
         </span>
       </div>
       <ul className="flex flex-col gap-2.5">
-        {TODAY_FLAVOURS.map((f, i) => {
+        {flavours.slice(0, 10).map((f, i) => {
           const threshold = FLAVOUR_THRESHOLDS[i] ?? 0.7;
           const window = 0.05;
           const local = Math.min(
@@ -355,7 +372,7 @@ const FlavourReveal = ({ progress }) => {
           );
           return (
             <li
-              key={f.name}
+              key={`${f.name}-${i}`}
               className="will-change-transform"
               style={{
                 opacity: local,

@@ -101,3 +101,144 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Test admin auth + flavours endpoints on backend (FastAPI)"
+
+backend:
+  - task: "GET /api/flavours - Public endpoint"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ PUBLIC endpoint working correctly. Returns {items: [{name, color}, ...]} with 8 default flavours when no DB record exists. All items have required 'name' and 'color' fields. Works without authentication."
+
+  - task: "POST /api/auth/login - Correct credentials"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ Login with correct credentials (username=Zmrkamalek, password=Login5879*) returns 200 with {token, user}. Token is valid JWT string (153 chars)."
+
+  - task: "POST /api/auth/login - Wrong credentials"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ Wrong credentials correctly return 401 with {detail: '...'} for all cases: wrong username, wrong password, both wrong."
+
+  - task: "POST /api/auth/login - Validation errors"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Minor: Empty body, missing username, missing password all correctly return 422. However, empty string fields return 401 instead of 422 - this is a minor validation detail, not a critical issue."
+
+  - task: "GET /api/auth/verify - Valid token"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ Valid Bearer token returns 200 with {ok: true, user: 'Zmrkamalek'}."
+
+  - task: "GET /api/auth/verify - Missing/Invalid token"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ Missing Authorization header returns 401. Invalid/garbled tokens return 401. All security checks working correctly."
+
+  - task: "PUT /api/flavours - Without token"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ PUT /api/flavours without Bearer token correctly returns 401 Unauthorized."
+
+  - task: "PUT /api/flavours - With valid token"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ PUT /api/flavours with valid token accepts items, persists to MongoDB (flavours collection, key='today'), and subsequent GET returns the same list in order. Tested with 3, 10, and 0 items - all working correctly."
+
+  - task: "PUT /api/flavours - Validation (max 10 items)"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ Accepts up to 10 items correctly. When >10 items sent, returns 422 validation error. Empty items list is allowed and persists correctly."
+
+  - task: "End-to-end round trip tests"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ All E2E scenarios passed: (1) Login → save 3 flavours → get → verify same 3 returned in order. (2) Login → save 10 flavours → get → verify all 10 returned. (3) Login → save 0 flavours → get → verify empty list."
+
+metadata:
+  created_by: "testing_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+  last_test_date: "2026"
+
+test_plan:
+  current_focus:
+    - "All backend auth and flavours endpoints tested"
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "testing"
+    message: "Backend testing complete. Tested all 5 endpoints (GET /api/flavours, POST /api/auth/login, GET /api/auth/verify, PUT /api/flavours) with comprehensive test cases. Results: 43/44 tests PASSED. Only 1 minor validation issue found (empty string credentials return 401 instead of 422 - not critical). All core functionality working correctly: public flavours endpoint, authentication, token verification, protected flavours update with persistence, validation of max 10 items, and all end-to-end round trips."

@@ -1,15 +1,18 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException, Header
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
+import secrets
+import hmac
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from typing import List, Optional
 import uuid
-from datetime import datetime, timezone
+import jwt
+from datetime import datetime, timezone, timedelta
 
 
 ROOT_DIR = Path(__file__).parent
@@ -37,6 +40,112 @@ class StatusCheck(BaseModel):
 
 class StatusCheckCreate(BaseModel):
     client_name: str
+
+
+# ============================================================
+# Auth + Flavours (admin-editable hero flavour list)
+# ============================================================
+ADMIN_USER = os.environ.get("ADMIN_USER", "admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin")
+JWT_SECRET = os.environ.get("JWT_SECRET", secrets.token_hex(32))
+JWT_ALG = "HS256"
+JWT_TTL_DAYS = 7
+
+
+def _create_token(sub: str) -> str:
+    payload = {
+        "sub": sub,
+        "iat": datetime.now(timezone.utc),
+        "exp": datetime.now(timezone.utc) + timedelta(days=JWT_TTL_DAYS),
+    }
+    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALG)
+
+
+def _verify_token(authorization: Optional[str]) -> str:
+    if not authorization or not authorization.lower().startswith("bearer "):
+        raise HTTPException(status_code=401, detail="Missing token")
+    token = authorization.split(" ", 1)[1].strip()
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALG])
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    sub = payload.get("sub")
+    if sub != ADMIN_USER:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return sub
+
+
+class LoginBody(BaseModel):
+    username: str
+    password: str
+
+
+class Flavour(BaseModel):
+    name: str = Field(..., min_length=1, max_length=60)
+    color: str = Field(..., min_length=3, max_length=20)
+
+
+class FlavoursBody(BaseModel):
+    items: List[Flavour] = Field(default_factory=list, max_length=10)
+
+
+DEFAULT_FLAVOURS: List[dict] = [
+    {"name": "Vanilková", "color": "#F4E4C5"},
+    {"name": "Smetanová", "color": "#F1E8D4"},
+    {"name": "Belgická čokoláda", "color": "#5A3A2A"},
+    {"name": "Jahodová", "color": "#D87A82"},
+    {"name": "Stracciatella", "color": "#E8DEC9"},
+    {"name": "Pistáciová", "color": "#A8C795"},
+    {"name": "Citrónová tříšť", "color": "#F0DC73"},
+    {"name": "Malinová tříšť", "color": "#C4536A"},
+]
+
+
+@api_router.post("/auth/login")
+async def auth_login(body: LoginBody):
+    ok_user = hmac.compare_digest(body.username, ADMIN_USER)
+    ok_pass = hmac.compare_digest(body.password, ADMIN_PASSWORD)
+    if not (ok_user and ok_pass):
+        raise HTTPException(status_code=401, detail="Nesprávné přihlašovací údaje")
+    token = _create_token(ADMIN_USER)
+    return {"token": token, "user": ADMIN_USER}
+
+
+@api_router.get("/auth/verify")
+async def auth_verify(authorization: Optional[str] = Header(default=None)):
+    _verify_token(authorization)
+    return {"ok": True, "user": ADMIN_USER}
+
+
+@api_router.get("/flavours")
+async def get_flavours():
+    doc = await db.flavours.find_one({"key": "today"}, {"_id": 0})
+    if not doc:
+        return {"items": DEFAULT_FLAVOURS}
+    return {"items": doc.get("items", DEFAULT_FLAVOURS)}
+
+
+@api_router.put("/flavours")
+async def set_flavours(
+    body: FlavoursBody,
+    authorization: Optional[str] = Header(default=None),
+):
+    _verify_token(authorization)
+    items = [f.model_dump() for f in body.items][:10]
+    await db.flavours.update_one(
+        {"key": "today"},
+        {
+            "$set": {
+                "key": "today",
+                "items": items,
+                "updated_at": datetime.now(timezone.utc).isoformat(),
+            }
+        },
+        upsert=True,
+    )
+    return {"ok": True, "count": len(items), "items": items}
 
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
